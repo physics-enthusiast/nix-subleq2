@@ -8,11 +8,11 @@ let
   # subtract the integer representations of 2 words
   subtract = a: b: width:
     wrap width (a + (wordsize width - b));
-  # addresses are integers which must be coerced into strings
-  # before we can index an attrset with them
 in
 step = state: iter:
   let
+    # addresses are integers which must be coerced into strings
+    # before we can index an attrset with them
     deref = addr:
       # memory is initialized to zeros
       state.mem."${builtins.toString addr}" or 0;
