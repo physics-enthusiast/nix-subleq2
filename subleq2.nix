@@ -24,7 +24,7 @@ step = state: iter:
     # defaults to "no addresses are special, program never halts"
     magic = state.magic or (ptr: mem: mem);
     # acc = a - acc
-  # ptr is **a so we must dereference twice
+    # ptr is **a so we must dereference twice
     acc = subtract (deref (deref state.ptr)) (state.acc or 0) width;
     # we test if acc is negative under the two's complement
     # representation by comparing it to the maximum positive integer
