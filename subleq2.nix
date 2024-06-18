@@ -1,19 +1,21 @@
-{ mem
-# number of "clock cycles" to run for
-, iterCount ? 1000
-# length of a word, defaults to 32 bits
-, width ? 32
-# value the accumulator is initialize to
-, acc ? 0
-# initial instruction pointer position
-, ptr ? 0
-# function that takes the a pointer to a, checks if you jumped
-# to a magic address, does stuff to if you did, and optionally
-# "halts" the program
-# defaults to "no addresses are special, program never halts"
-, magic ? (ptr: mem: mem)
-}@init:
+init:
 let
+  defaults = {
+    # number of "clock cycles" to run for
+      iterCount = 100;
+    # length of a word, defaults to 32 bits
+      width = 32;
+    # value the accumulator is initialize to
+      acc = 0;
+    # initial instruction pointer position
+      ptr = 0;
+    # function that takes the a pointer to a, checks if you jumped
+    # to a magic address, does stuff to if you did, and optionally
+    # "halts" the program
+    # defaults to "no addresses are special, program never halts"
+      magic = (ptr: mem: mem);
+  };
+  start = defaults // init;
   # maximum unsigned integer size
   wordsize = width:
     builtins.foldl' builtins.mul 1 (builtins.genList (_: 2) width);
@@ -23,7 +25,11 @@ let
   # subtract the integer representations of 2 words
   subtract = a: b: width:
     wrap width (a + (wordsize width - b));
-  step = state: iter: if mem.halts or false then
+  step = state: iter:
+  let
+    inherit (state) magic mem width;
+  in
+  if mem.halts or false then
     state
   else let
     # addresses are integers which must be coerced into strings
@@ -48,4 +54,4 @@ let
   in
     { inherit acc iter magic mem ptr width; };
 in
-  builtins.foldl' step init (builtins.genList (n: n) iterCount)
+  builtins.foldl' step start (builtins.genList (n: n) start.iterCount)
