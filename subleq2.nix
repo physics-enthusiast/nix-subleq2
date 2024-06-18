@@ -26,7 +26,6 @@ let
   step = state: iter: if mem.halts or false then
     state
   else let
-    inherit (state) magic width;
     # addresses are integers which must be coerced into strings
     # before we can index an attrset with them
     deref = addr:
