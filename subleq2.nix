@@ -37,7 +37,7 @@ let
     acc = subtract (deref (deref state.ptr)) (state.acc or 0) width;
     # we test if acc is negative under the two's complement
     # representation by comparing it to the maximum positive integer
-    ptr = if (acc > (wordsize width -1)) or (acc == 0) then
+    ptr = if acc > (wordsize width -1) || acc == 0 then
       # jump to b
       deref (state.ptr + 1)
     else
@@ -47,6 +47,6 @@ let
       { name = builtins.toString (deref state.ptr); value = acc; }
     ]));
   in
-    { inherit acc iter magic mem ptr width; }
+    { inherit acc iter magic mem ptr width; };
 in
   builtins.foldl' step init (builtins.genList (n: n) iterCount)
