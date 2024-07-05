@@ -5,7 +5,7 @@ let
       iterCount = 100;
     # length of a word, defaults to 32 bits
       width = 32;
-    # value the accumulator is initialize to
+    # value the accumulator is initialized to
       acc = 0;
     # initial instruction pointer position
       ptr = 0;
@@ -20,10 +20,10 @@ let
   wordsize = width:
     builtins.foldl' builtins.mul 1 (builtins.genList (_: 2) width);
   # simulate a finite bit width via integer division
-  wrap = x: width: 
+  wrap = width: x: 
     x - (x / (wordsize width))*(wordsize width);
   # subtract the integer representations of 2 words
-  subtract = a: b: width:
+  subtract = width: a: b:
     wrap width (a + (wordsize width - b));
   step = state: iter:
   let
@@ -39,7 +39,7 @@ let
       state.mem."${builtins.toString addr}" or 0;
     # acc = a - acc
     # ptr is **a so we must dereference twice
-    acc = subtract (deref (deref state.ptr)) (state.acc or 0) width;
+    acc = subtract width (deref (deref state.ptr)) (state.acc or 0);
     # we test if acc is negative under the two's complement
     # representation by comparing it to the maximum positive integer
     ptr = if acc > (wordsize width -1) || acc == 0 then
